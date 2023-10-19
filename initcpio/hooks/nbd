@@ -1,0 +1,44 @@
+# vim: set ft=sh:
+
+run_earlyhook() {
+    if [[ -n "${ip}" && -n "${j_nbd_srv}" ]]; then
+        # Module autoloading like with loop devices does not work, doing manually...
+         modprobe nbd 2> /dev/null
+    fi
+}
+
+run_hook() {
+    if [[ -n "${ip}" && -n "${j_nbd_srv}" ]]; then
+
+        j_nbd_srv=$(eval echo ${j_nbd_srv})
+        [[ -z "${j_nbd_name}" ]] && j_nbd_name="j"
+
+        mount_handler="j_pxe_nbd_mount_handler"
+    fi
+}
+
+j_pxe_nbd_mount_handler () {
+    newroot="${1}"
+
+    msg ":: Waiting for boot device..."
+    while ! poll_device /dev/nbd0 30; do
+        echo "ERROR: boot device didn't show up after 30 seconds..."
+        echo "   Falling back to interactive prompt"
+        echo "   You can try to fix the problem manually, log out when you are finished"
+        launch_interactive_shell
+    done
+
+    msg ":: Setup NBD from ${j_nbd_srv} at /dev/nbd0"
+    nbd-client ${j_nbd_srv} -N ${j_nbd_name} /dev/nbd0
+
+    if [[ "${copytoram}" != "n" ]]; then
+        copytoram="y"
+    fi
+
+    jdevice=/dev/nbd0
+
+    j_mount_handler ${newroot}
+
+    msg ":: Disconnect NBD from ${j_nbd_srv} at /dev/nbd0"
+    nbd-client -d /dev/nbd0
+}

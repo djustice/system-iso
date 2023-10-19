@@ -1,0 +1,270 @@
+#!/bin/bash
+
+set -e -u
+
+iso_label="SYSTEM_$(date +%Y%m)"
+work_dir="SYSTEM_$(date +%Y.%m)"
+arch="x86_64"
+script_path="/usr/share/system-iso"
+
+run_once() {
+    if [[ ! -e ${work_dir}/${1} ]]; then
+        $1
+        touch ${work_dir}/${1}
+    fi
+}
+
+create_chroot() {
+    announce "create_chroot()"
+
+    cp ${script_path}/pacman.conf ${work_dir}/pacman.conf
+    mkdir -p "${work_dir}/chroot"
+    pacstrap -c -G \
+             -C "${work_dir}/pacman.conf" \
+             -M "${work_dir}/chroot" \
+             base syslinux haveged intel-ucode memtest86+ mkinitcpio-nfs-utils nbd linux linux-headers
+
+    announce "create_chroot() complete"
+}
+
+install_packages() {
+    announce "install_packages()"
+
+    pacstrap -c -G \
+             -C "${work_dir}/pacman.conf" \
+             -M "${work_dir}/chroot" \
+             $(echo $(grep -h -v ^# ${script_path}/package.list) | sed -e 's/\n/ /g')
+
+    local _hook
+    mkdir -p ${work_dir}/chroot/etc/initcpio/{hooks,install}
+    for _hook in system shutdown nbd http nfs loop; do   #disabled pxe
+        cp /usr/lib/initcpio/hooks/${_hook} ${work_dir}/chroot/etc/initcpio/hooks
+        cp /usr/lib/initcpio/install/${_hook} ${work_dir}/chroot/etc/initcpio/install
+    done
+    sed -i "s|/usr/lib/initcpio/|/etc/initcpio/|g" ${work_dir}/chroot/etc/initcpio/install/shutdown
+    cp /usr/lib/initcpio/install/kms ${work_dir}/chroot/etc/initcpio/install
+    cp /usr/lib/initcpio/shutdown ${work_dir}/chroot/etc/initcpio
+    cp ${script_path}/mkinitcpio.conf ${work_dir}/chroot/etc/mkinitcpio-live.conf
+
+    #
+    eval arch-chroot "${work_dir}/chroot" \
+                        'mkinitcpio \
+                        -c /etc/mkinitcpio-live.conf \
+                        -k /boot/vmlinuz-linux \
+                        -g /boot/system.img'
+
+    announce "install_packages() complete"
+}
+
+configure_packages() {
+    announce "configure_packages()"
+
+    cp -af ${script_path}/chroot.skel/* ${work_dir}/chroot
+
+    #
+    curl -o ${work_dir}/chroot/etc/pacman.d/mirrorlist 'https://www.archlinux.org/mirrorlist/?country=all&protocol=http&use_mirror_status=on'
+
+    eval arch-chroot "${work_dir}/chroot" 'usermod -a -G users,video,lp,audio,wheel user'
+    eval arch-chroot "${work_dir}/chroot" '/root/configure-system.sh'
+
+    # pkgbuild this stuff
+    #
+    rm ${work_dir}/chroot/root/configure-system.sh
+
+    cp -a ${work_dir}/chroot/j/wallpapers/RedTriangles ${work_dir}/chroot/usr/share/wallpapers
+
+    cp -a ${work_dir}/chroot/j/icons/system-mono-icons/system-mono ${work_dir}/chroot/usr/share/icons
+
+    eval arch-chroot "${work_dir}/chroot" "mkdir /home/user"
+    eval arch-chroot "${work_dir}/chroot" "chown user:users /home/user"
+    eval arch-chroot "${work_dir}/chroot" "mkdir /home/user/.config"
+    eval arch-chroot "${work_dir}/chroot" "chmod -R 777 /home/user/.config"
+    eval arch-chroot "${work_dir}/chroot" "chown -R user:users /home/user/.config"
+    eval arch-chroot "${work_dir}/chroot" "cp /j/kdeglobals /home/user/.config"
+    eval arch-chroot "${work_dir}/chroot" "cp /j/plasma-org.kde.plasma.desktop-appletsrc /home/user/.config"
+    eval arch-chroot "${work_dir}/chroot" "mkdir /etc/skel/.config"
+    eval arch-chroot "${work_dir}/chroot" "cp /j/plasma-org.kde.plasma.desktop-appletsrc /etc/skel/.config"
+    eval arch-chroot "${work_dir}/chroot" "chown user:users /home/user/.config/plasma-org.kde.plasma.desktop-appletsrc"
+
+    announce "configure_packages() complete"
+}
+
+setup_boot() {
+    announce "setup_boot()"
+
+    mkdir -p ${work_dir}/iso/root/boot/${arch}
+    cp ${work_dir}/chroot/boot/system.img ${work_dir}/iso/root/boot/${arch}/system.img
+    cp ${work_dir}/chroot/boot/vmlinuz-linux ${work_dir}/iso/root/boot/${arch}/linux.vm
+
+    cp ${work_dir}/chroot/boot/memtest86+/memtest.bin ${work_dir}/iso/root/boot/memtest
+    cp ${work_dir}/chroot/usr/share/licenses/common/GPL2/license.txt ${work_dir}/iso/root/boot/memtest.COPYING
+    cp ${work_dir}/chroot/boot/intel-ucode.img ${work_dir}/iso/root/boot/intel_ucode.img
+    cp ${work_dir}/chroot/usr/share/licenses/intel-ucode/LICENSE ${work_dir}/iso/root/boot/intel_ucode.LICENSE
+
+    mkdir -p ${work_dir}/iso/root/boot/syslinux
+    for _cfg in ${script_path}/syslinux/*.cfg; do
+        sed "s|%SYSTEM_LABEL%|${iso_label}|g;
+             s|%INSTALL_DIR%|root|g" ${_cfg} > ${work_dir}/iso/root/boot/syslinux/${_cfg##*/}
+    done
+    cp ${script_path}/syslinux/splash.png ${work_dir}/iso/root/boot/syslinux
+    cp ${work_dir}/chroot/usr/lib/syslinux/bios/*.c32 ${work_dir}/iso/root/boot/syslinux
+    cp ${work_dir}/chroot/usr/lib/syslinux/bios/lpxelinux.0 ${work_dir}/iso/root/boot/syslinux
+    cp ${work_dir}/chroot/usr/lib/syslinux/bios/memdisk ${work_dir}/iso/root/boot/syslinux
+    mkdir -p ${work_dir}/iso/root/boot/syslinux/hdt
+    gzip -c -9 ${work_dir}/chroot/usr/share/hwdata/pci.ids > ${work_dir}/iso/root/boot/syslinux/hdt/pciids.gz
+    gzip -c -9 ${work_dir}/chroot/usr/lib/modules/*-arch*/modules.alias > ${work_dir}/iso/root/boot/syslinux/hdt/modalias.gz
+
+    mkdir -p ${work_dir}/iso/isolinux
+    sed "s|%INSTALL_DIR%|root|g" ${script_path}/isolinux/isolinux.cfg > ${work_dir}/iso/isolinux/isolinux.cfg
+    cp ${work_dir}/chroot/usr/lib/syslinux/bios/isolinux.bin ${work_dir}/iso/isolinux/
+    cp ${work_dir}/chroot/usr/lib/syslinux/bios/isohdpfx.bin ${work_dir}/iso/isolinux/
+    cp ${work_dir}/chroot/usr/lib/syslinux/bios/ldlinux.c32 ${work_dir}/iso/isolinux/
+
+    mkdir -p ${work_dir}/iso/EFI/boot
+    cp ${work_dir}/chroot/usr/share/efitools/efi/PreLoader.efi ${work_dir}/iso/EFI/boot/bootx64.efi
+    cp ${work_dir}/chroot/usr/share/efitools/efi/HashTool.efi ${work_dir}/iso/EFI/boot/
+
+    cp ${work_dir}/chroot/usr/lib/systemd/boot/efi/systemd-bootx64.efi ${work_dir}/iso/EFI/boot/loader.efi
+
+    mkdir -p ${work_dir}/iso/loader/entries
+    cp ${script_path}/efiboot/loader/loader.conf ${work_dir}/iso/loader/
+    cp ${script_path}/efiboot/loader/entries/uefi-shell-v2-x86_64.conf ${work_dir}/iso/loader/entries/
+    cp ${script_path}/efiboot/loader/entries/uefi-shell-v1-x86_64.conf ${work_dir}/iso/loader/entries/
+
+    sed "s|%SYSTEM_LABEL%|${iso_label}|g;
+         s|%INSTALL_DIR%|root|g" \
+        ${script_path}/efiboot/loader/entries/system-x86_64-usb.conf > ${work_dir}/iso/loader/entries/system-x86_64.conf
+
+    # EFI Shell 2.0 for UEFI 2.3+
+    curl -o ${work_dir}/iso/EFI/shellx64_v2.efi https://raw.githubusercontent.com/tianocore/edk2/master/ShellBinPkg/UefiShell/X64/Shell.efi
+    # EFI Shell 1.0 for non UEFI 2.3+
+    curl -o ${work_dir}/iso/EFI/shellx64_v1.efi https://raw.githubusercontent.com/tianocore/edk2/master/EdkShellBinPkg/FullShell/X64/Shell_Full.efi
+
+    mkdir -p ${work_dir}/iso/EFI/root
+    truncate -s 64M ${work_dir}/iso/EFI/root/efiboot.img
+    mkfs.fat -n J_EFI ${work_dir}/iso/EFI/root/efiboot.img
+
+    mkdir -p ${work_dir}/efiboot
+    mount ${work_dir}/iso/EFI/root/efiboot.img ${work_dir}/efiboot
+
+    mkdir -p ${work_dir}/efiboot/EFI/root
+    cp ${work_dir}/iso/root/boot/x86_64/linux.vm ${work_dir}/efiboot/EFI/root/linux.vm.efi
+    cp ${work_dir}/iso/root/boot/x86_64/system.img ${work_dir}/efiboot/EFI/root/system.img
+
+    cp ${work_dir}/iso/root/boot/intel_ucode.img ${work_dir}/efiboot/EFI/root/intel_ucode.img
+
+    mkdir -p ${work_dir}/efiboot/EFI/boot
+    cp ${work_dir}/chroot/usr/share/efitools/efi/PreLoader.efi ${work_dir}/efiboot/EFI/boot/bootx64.efi
+    cp ${work_dir}/chroot/usr/share/efitools/efi/HashTool.efi ${work_dir}/efiboot/EFI/boot/
+
+    cp ${work_dir}/chroot/usr/lib/systemd/boot/efi/systemd-bootx64.efi ${work_dir}/efiboot/EFI/boot/loader.efi
+
+    mkdir -p ${work_dir}/efiboot/loader/entries
+    cp ${script_path}/efiboot/loader/loader.conf ${work_dir}/efiboot/loader/
+    cp ${script_path}/efiboot/loader/entries/uefi-shell-v2-x86_64.conf ${work_dir}/efiboot/loader/entries/
+    cp ${script_path}/efiboot/loader/entries/uefi-shell-v1-x86_64.conf ${work_dir}/efiboot/loader/entries/
+
+    sed "s|%J_LABEL%|${iso_label}|g;
+         s|%INSTALL_DIR%|root|g" \
+        ${script_path}/efiboot/loader/entries/system-x86_64-cd.conf > ${work_dir}/efiboot/loader/entries/system-x86_64.conf
+
+    cp ${work_dir}/iso/EFI/shellx64_v2.efi ${work_dir}/efiboot/EFI/
+    cp ${work_dir}/iso/EFI/shellx64_v1.efi ${work_dir}/efiboot/EFI/
+
+    umount -d ${work_dir}/efiboot
+
+    announce "setup_boot() complete"
+}
+
+build_iso() {
+    announce "build_iso()"
+
+    cp -a -l -f ${work_dir}/chroot ${work_dir}
+
+    pacman -Sl -r "${work_dir}/chroot" --config "${work_dir}/pacman.conf" | \
+        awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > \
+        "${work_dir}/iso/root/pkglist.${arch}.txt"
+
+    if [[ -d "${work_dir}/chroot/boot" ]]; then
+        find "${work_dir}/chroot/boot" -type f -name '*.img' -delete
+    fi
+
+    if [[ -d "${work_dir}/chroot/boot" ]]; then
+        find "${work_dir}/chroot/boot" -type f -name 'linux.vm*' -delete
+    fi
+
+    if [[ -d "${work_dir}/chroot/var/lib/pacman" ]]; then
+        find "${work_dir}/chroot/var/lib/pacman" -maxdepth 1 -type f -delete
+    fi
+
+    if [[ -d "${work_dir}/chroot/var/lib/pacman/sync" ]]; then
+        find "${work_dir}/chroot/var/lib/pacman/sync" -delete
+    fi
+
+    if [[ -d "${work_dir}/chroot/var/cache/pacman/pkg" ]]; then
+        find "${work_dir}/chroot/var/cache/pacman/pkg" -type f -delete
+    fi
+
+    if [[ -d "${work_dir}/chroot/var/log" ]]; then
+        find "${work_dir}/chroot/var/log" -type f -delete
+    fi
+
+    if [[ -d "${work_dir}/chroot/var/tmp" ]]; then
+        find "${work_dir}/chroot/var/tmp" -mindepth 1 -delete
+    fi
+
+    find "${work_dir}/chroot" \( -name "*.pacnew" -o -name "*.pacsave" -o -name "*.pacorig" \) -delete
+
+    mkdir -p "${work_dir}/iso/root/${arch}"
+
+    mksquashfs "${work_dir}/chroot" "${work_dir}/iso/root/${arch}/system.sfs" -noappend -comp "gzip" -Xcompression-level 1
+
+    sha512sum ${work_dir}/iso/root/${arch}/system.sfs > ${work_dir}/iso/root/${arch}/system.sha512
+
+    rm -rf ${work_dir}/root
+
+    xorriso -as mkisofs \
+        -iso-level 3 \
+        -full-iso9660-filenames \
+        -volid "${iso_label}" \
+        -appid "System Live" \
+        -publisher "Jonathan Swift" \
+        -preparer "jswift" \
+        -eltorito-boot isolinux/isolinux.bin \
+        -eltorito-catalog isolinux/boot.cat \
+        -no-emul-boot -boot-load-size 4 -boot-info-table \
+        -isohybrid-mbr ${work_dir}/iso/isolinux/isohdpfx.bin \
+        -eltorito-alt-boot \
+        -e EFI/root/efiboot.img \
+        -no-emul-boot \
+        -isohybrid-gpt-basdat \
+        -output "${work_dir}/../system-$(date +%Y.%m%d.%H%M)-${arch}.iso" \
+        "${work_dir}/iso/"
+
+    announce "build_iso() complete"
+}
+
+announce() {
+    echo ""
+    echo "::::: system-iso: $1 :::::"
+    sleep 5
+    echo ""
+}
+
+if [[ ${EUID} -ne 0 ]]; then
+    echo "This script must be run as root."
+    exit
+fi
+
+if [[ ${arch} != x86_64 ]]; then
+    echo "This script must be run on x86_64."
+    exit
+fi
+
+mkdir -p ${work_dir}
+
+run_once create_chroot
+run_once install_packages
+run_once configure_packages
+run_once setup_boot
+run_once build_iso

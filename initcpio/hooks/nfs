@@ -1,0 +1,30 @@
+# vim: set ft=sh:
+
+run_hook() {
+    if [[ -n "${ip}" && -n "${j_nfs_srv}" ]]; then
+
+        j_nfs_srv=$(eval echo ${j_nfs_srv})
+        [[ -n "${j_nfs_opt}" ]] && j_nfs_opt="-o ${j_nfs_opt}"
+
+        mount_handler="j_nfs_mount_handler"
+    fi
+}
+
+j_nfs_mount_handler() {
+    newroot="${1}"
+    mkdir -p "/run/j/bootmnt"
+    msg ":: Mounting '${j_nfs_srv}'"
+    # Do not put "${j_nfs_opt}" nfsmount fails!
+    if ! nfsmount ${j_nfs_opt} "${j_nfs_srv}" "/run/j/bootmnt"; then
+        echo "ERROR: Mounting '${j_nfs_srv}'"
+        echo "   Falling back to interactive prompt"
+        echo "   You can try to fix the problem manually, log out when you are finished"
+        launch_interactive_shell
+    fi
+
+    if [[ "${copytoram}" != "n" ]]; then
+        copytoram="y"
+    fi
+
+    j_mount_handler ${newroot}
+}

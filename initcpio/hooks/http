@@ -1,0 +1,51 @@
+# vim: set ft=sh:
+
+run_hook() {
+    if [[ -n "${ip}" && -n "${j_http_srv}" ]]; then
+
+        # booting with http is always copy-to-ram, so set here to make sure
+        # addresses are flushed and interface is set down
+        copytoram="y"
+
+        j_http_srv=$(eval echo ${j_http_srv})
+        [[ -z "${j_http_spc}" ]] && j_http_spc="75%"
+
+        mount_handler="j_pxe_http_mount_handler"
+    fi
+}
+
+# Fetch a file with CURL
+#
+# $1 URL
+# $2 Destination directory inside httpspace/${jbasedir}
+_curl_get() {
+    local _url="${1}"
+    local _dst="${2}"
+
+    msg ":: Downloading '${_url}'"
+    if ! curl -L -f -o "/run/j/httpspace/${jbasedir}${_dst}/${_url##*/}" --create-dirs "${_url}"; then
+        echo "ERROR: Downloading '${_url}'"
+        echo "   Falling back to interactive prompt"
+        echo "   You can try to fix the problem manually, log out when you are finished"
+        launch_interactive_shell
+    fi
+}
+
+j_pxe_http_mount_handler () {
+    newroot="${1}"
+
+    msg ":: Mounting /run/j/httpspace (tmpfs) filesystem, size='${j_http_spc}'"
+    mkdir -p "/run/j/httpspace"
+    mount -t tmpfs -o size="${j_http_spc}",mode=0755 httpspace "/run/j/httpspace"
+
+    _curl_get "${j_http_srv}${jbasedir}/${arch}/system.sfs" "/${arch}"
+
+    if [[ "${checksum}" == "y" ]]; then
+        _curl_get "${j_http_srv}${jbasedir}/${arch}/system.md5" "/${arch}"
+    fi
+
+    mkdir -p "/run/j/bootmnt"
+    mount -o bind /run/j/httpspace /run/j/bootmnt
+
+    j_mount_handler ${newroot}
+}

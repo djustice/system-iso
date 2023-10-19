@@ -1,0 +1,1 @@
+add dosfstools and squashfs-tools to system-iso PKGBUILD deps
