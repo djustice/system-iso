@@ -75,6 +75,41 @@ configure_packages() {
 
     cp -a ${work_dir}/chroot/j/icons/system-mono-icons/system-mono ${work_dir}/chroot/usr/share/icons
 
+    mkdir -p "${work_dir}/chroot/new"
+    chmod 777 "${work_dir}/chroot/new"
+
+    echo "initialize special directories"
+    rm -v -rf ${work_dir}/chroot/sys ${work_dir}/chroot/proc ${work_dir}/chroot/dev
+    echo $(ls ${work_dir}/chroot)
+    mkdir -p -v -m 1777 ${work_dir}/chroot/tmp
+    mkdir -p -v -m 1777 ${work_dir}/chroot/var/tmp
+    mkdir -p -v ${work_dir}/chroot/boot/grub
+    mkdir -p -v ${work_dir}/chroot/usr/lib/locale
+    mkdir -p -v ${work_dir}/chroot/usr/share/icons/default
+    mkdir -p -v ${work_dir}/chroot/media
+    mkdir -p -v ${work_dir}/chroot/mnt
+    mkdir -v ${work_dir}/chroot/sys
+    mkdir -v ${work_dir}/chroot/proc
+
+    echo "create the basic devices (/dev/{console,null,zero}) on the target"
+    mkdir -v ${work_dir}/chroot/dev
+    mknod ${work_dir}/chroot/dev/console c 5 1
+    mknod ${work_dir}/chroot/dev/null c 1 3
+    mknod ${work_dir}/chroot/dev/zero c 1 5
+
+    echo "adjust permissions on /tmp and /var/tmp"
+    chmod -v 777 ${work_dir}/chroot/var/tmp
+    chmod -v o+t ${work_dir}/chroot/var/tmp
+    chmod -v 777 ${work_dir}/chroot/tmp
+    chmod -v o+t ${work_dir}/chroot/tmp
+
+    echo "install /etc/resolv.conf"
+    cp -vf /etc/resolv.conf ${work_dir}/chroot/etc/resolv.conf
+
+    mount --bind "${work_dir}/chroot" "${work_dir}/chroot"
+    mount -t proc /proc ${work_dir}/chroot/proc/
+    mount -t sysfs /sys ${work_dir}/chroot/sys/
+
     eval arch-chroot "${work_dir}/chroot" "mkdir /home/user"
     eval arch-chroot "${work_dir}/chroot" "chown user:users /home/user"
     eval arch-chroot "${work_dir}/chroot" "mkdir /home/user/.config"
@@ -97,7 +132,6 @@ setup_boot() {
     cp ${work_dir}/chroot/boot/vmlinuz-linux ${work_dir}/iso/root/boot/${arch}/linux.vm
 
     cp ${work_dir}/chroot/boot/memtest86+/memtest.bin ${work_dir}/iso/root/boot/memtest
-    cp ${work_dir}/chroot/usr/share/licenses/common/GPL2/license.txt ${work_dir}/iso/root/boot/memtest.COPYING
     cp ${work_dir}/chroot/boot/intel-ucode.img ${work_dir}/iso/root/boot/intel_ucode.img
     cp ${work_dir}/chroot/usr/share/licenses/intel-ucode/LICENSE ${work_dir}/iso/root/boot/intel_ucode.LICENSE
 
@@ -171,7 +205,11 @@ setup_boot() {
     cp ${work_dir}/iso/EFI/shellx64_v2.efi ${work_dir}/efiboot/EFI/
     cp ${work_dir}/iso/EFI/shellx64_v1.efi ${work_dir}/efiboot/EFI/
 
+    sleep 30
+
     umount -d ${work_dir}/efiboot
+    umount -fl ${work_dir}/chroot/proc
+    umount -fl ${work_dir}/chroot/sys
 
     announce "setup_boot() complete"
 }

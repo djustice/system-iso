@@ -1,6 +1,0 @@
--- fix wallpaper
-    : replace /usr/share/wallpapers/Next/contents with solid black images from configure-system.sh
-
--- add PKGBUILD deps
-    : dosfstools
-    : squashfs-tools
