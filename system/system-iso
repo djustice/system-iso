@@ -72,8 +72,8 @@ configure_packages() {
     rm ${work_dir}/chroot/root/configure-system.sh
 
     cp -a ${work_dir}/chroot/j/wallpapers/RedTriangles ${work_dir}/chroot/usr/share/wallpapers
-
-    cp -a ${work_dir}/chroot/j/icons/system-mono-icons/system-mono ${work_dir}/chroot/usr/share/icons
+    cp -a ${work_dir}/chroot/j/wallpapers/black.png ${work_dir}/chroot/usr/share/wallpapers
+    cp -a ${work_dir}/chroot/j/icons/system-mono-icons/system-candy/system-candy-FF0000 ${work_dir}/chroot/usr/share/icons
 
     mkdir -p "${work_dir}/chroot/new"
     chmod 777 "${work_dir}/chroot/new"
