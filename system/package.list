@@ -65,6 +65,13 @@ xl2tpd
 # swift
 zsh
 xorg
+xorg-xwayland
+wayland
+wayland-docs
+wayland-protocols
+wayland-utils
+waylandpp
+wayland
 plasma
 kde-applications
 sddm
