@@ -1,15 +1,12 @@
 [$Version]
-update_info=fonts_global.upd:Fonts_Global,fonts_global_toolbar.upd:Fonts_Global_Toolbar,filepicker.upd:filepicker-remove-old-previews-entry
-
-[Appmenu Style]
-Style=InApplication
+update_info=filepicker.upd:filepicker-remove-old-previews-entry,fonts_global.upd:Fonts_Global,fonts_global_toolbar.upd:Fonts_Global_Toolbar,icons_remove_effects.upd:IconsRemoveEffects,kwin.upd:animation-speed,style_widgetstyle_default_breeze.upd:StyleWidgetStyleDefaultBreeze
 
 [ColorEffects:Disabled]
 ChangeSelectionColor=
 Color=56,56,56
 ColorAmount=0
 ColorEffect=0
-ContrastAmount=0.65
+ContrastAmount=0.8500000000000001
 ContrastEffect=1
 Enable=
 IntensityAmount=0.1
@@ -27,161 +24,119 @@ IntensityAmount=0
 IntensityEffect=0
 
 [Colors:Button]
-BackgroundAlternate=77,77,77
+BackgroundAlternate=0,160,215
 BackgroundNormal=0,0,0
 DecorationFocus=255,0,0
 DecorationHover=255,0,0
 ForegroundActive=61,174,233
-ForegroundInactive=189,195,199
+ForegroundInactive=85,0,0
 ForegroundLink=41,128,185
-ForegroundNegative=218,68,83
+ForegroundNegative=255,0,0
 ForegroundNeutral=246,116,0
 ForegroundNormal=255,0,0
 ForegroundPositive=39,174,96
 ForegroundVisited=127,140,141
 
 [Colors:Complementary]
-BackgroundAlternate=59,64,69
-BackgroundNormal=49,54,59
-DecorationFocus=30,146,255
-DecorationHover=61,174,230
+BackgroundAlternate=66,66,66
+BackgroundNormal=51,51,51
+DecorationFocus=49,91,239
+DecorationHover=49,91,239
 ForegroundActive=246,116,0
-ForegroundInactive=175,176,179
-ForegroundLink=61,174,230
+ForegroundInactive=136,136,136
+ForegroundLink=49,91,239
 ForegroundNegative=237,21,21
 ForegroundNeutral=201,206,59
-ForegroundNormal=239,240,241
+ForegroundNormal=222,222,222
 ForegroundPositive=17,209,22
-ForegroundVisited=61,174,230
+ForegroundVisited=49,91,239
 
 [Colors:Selection]
-BackgroundAlternate=29,153,243
-BackgroundNormal=56,0,0
+BackgroundAlternate=79,127,239
+BackgroundNormal=29,0,0
 DecorationFocus=255,0,0
-DecorationHover=255,0,0
+DecorationHover=85,0,0
 ForegroundActive=252,252,252
-ForegroundInactive=56,0,0
+ForegroundInactive=125,0,0
 ForegroundLink=253,188,75
 ForegroundNegative=218,68,83
 ForegroundNeutral=246,116,0
 ForegroundNormal=255,0,0
 ForegroundPositive=39,174,96
-ForegroundVisited=189,195,199
+ForegroundVisited=128,152,239
 
 [Colors:Tooltip]
 BackgroundAlternate=77,77,77
-BackgroundNormal=25,0,0
+BackgroundNormal=50,50,50
 DecorationFocus=255,0,0
 DecorationHover=255,0,0
-ForegroundActive=61,174,233
-ForegroundInactive=189,195,199
-ForegroundLink=41,128,185
+ForegroundActive=49,91,239
+ForegroundInactive=85,0,0
+ForegroundLink=49,91,239
 ForegroundNegative=218,68,83
 ForegroundNeutral=246,116,0
-ForegroundNormal=255,0,0
+ForegroundNormal=222,222,222
 ForegroundPositive=39,174,96
 ForegroundVisited=127,140,141
 
 [Colors:View]
-BackgroundAlternate=29,0,0
+BackgroundAlternate=31,31,31
 BackgroundNormal=0,0,0
 DecorationFocus=255,0,0
 DecorationHover=255,0,0
-ForegroundActive=61,174,233
-ForegroundInactive=189,195,199
-ForegroundLink=41,128,185
+ForegroundActive=49,91,239
+ForegroundInactive=85,0,0
+ForegroundLink=49,91,239
 ForegroundNegative=218,68,83
 ForegroundNeutral=246,116,0
 ForegroundNormal=255,0,0
 ForegroundPositive=39,174,96
-ForegroundVisited=127,140,141
+ForegroundVisited=120,120,120
 
 [Colors:Window]
-BackgroundAlternate=77,77,77
+BackgroundAlternate=0,0,0
 BackgroundNormal=0,0,0
 DecorationFocus=255,0,0
 DecorationHover=255,0,0
-ForegroundActive=61,174,233
-ForegroundInactive=189,195,199
-ForegroundLink=41,128,185
+ForegroundActive=49,91,239
+ForegroundInactive=85,0,0
+ForegroundLink=49,91,239
 ForegroundNegative=218,68,83
 ForegroundNeutral=246,116,0
 ForegroundNormal=255,0,0
 ForegroundPositive=39,174,96
-ForegroundVisited=127,140,141
-
-[DesktopIcons]
-ActiveColor=255,0,0
-ActiveColor2=0,0,0
-ActiveEffect=tomonochrome
-ActiveSemiTransparent=false
-ActiveValue=1
-Animated=true
-DefaultColor=255,0,0
-DefaultColor2=0,0,0
-DefaultEffect=tomonochrome
-DefaultSemiTransparent=false
-DefaultValue=0.8700000047683716
-DisabledColor=255,0,0
-DisabledColor2=0,0,0
-DisabledEffect=tomonochrome
-DisabledSemiTransparent=true
-DisabledValue=1
-Size=0
-
-[DialogIcons]
-ActiveColor=255,0,0
-ActiveColor2=0,0,0
-ActiveEffect=tomonochrome
-ActiveSemiTransparent=false
-ActiveValue=1
-Animated=false
-DefaultColor=255,0,0
-DefaultColor2=0,0,0
-DefaultEffect=tomonochrome
-DefaultSemiTransparent=false
-DefaultValue=0.8700000047683716
-DisabledColor=255,0,0
-DisabledColor2=0,0,0
-DisabledEffect=tomonochrome
-DisabledSemiTransparent=true
-DisabledValue=1
-Size=32
+ForegroundVisited=250,250,250
 
 [DirSelect Dialog]
-DirSelectDialog Size=640,480
-History Items[$e]=file:$HOME,file:$HOME/Downloads,file:$HOME/Downloads
+DirSelectDialog Size=881,610
+History Items[$e]=file:$HOME
 
 [General]
-Name=Breeze Dark
-fixed=Hack,20,-1,5,50,0,0,0,0,0,Regular
-font=Noto Sans,18,-1,5,50,0,0,0,0,0,Regular
-menuFont=Noto Sans,16,-1,5,50,0,0,0,0,0,Regular
-shadeSortColumn=true
-smallestReadableFont=Noto Sans,14,-1,5,50,0,0,0,0,0,Regular
-toolBarFont=Noto Sans,18,-1,5,50,0,0,0,0,0,Regular
-widgetStyle=Breeze
+BrowserApplication=brave-browser-nightly.desktop
+ColorSchemeHash=8aedc958683fccb3b3c42bc1d93087b86973fb85
+TerminalApplication=/usr/bin/flatpak run --branch=stable --arch=x86_64 --command=yakuake org.kde.yakuake
+TerminalService=org.kde.yakuake.desktop
+XftHintStyle=hintslight
+XftSubPixel=rgb
+accentColorFromWallpaper=true
+fixed=Hack,13,-1,5,50,0,0,0,0,0
+font=Noto Sans,13,-1,5,50,0,0,0,0,0
+menuFont=Noto Sans,13,-1,5,50,0,0,0,0,0
+smallestReadableFont=Noto Sans,11,-1,5,50,0,0,0,0,0
+toolBarFont=Noto Sans,13,-1,5,50,0,0,0,0,0
 
 [Icons]
-Theme=system-mono
+Theme=system-candy-FF0000
 
 [KDE]
-ColorScheme=Breeze
-DoubleClickInterval=400
-LookAndFeelPackage=org.kde.breezedark.desktop
-ShowIconsInMenuItems=true
-ShowIconsOnPushButtons=true
-SingleClick=true
-StartDragDist=4
-StartDragTime=500
-WheelScrollLines=3
-contrast=4
-widgetStyle=fusion
+LookAndFeelPackage=org.kde.system
+SingleClick=false
 
 [KFileDialog Settings]
+Allow Expansion=false
 Automatically select filename extension=true
 Breadcrumb Navigation=false
-Decoration position=0
+Decoration position=2
 LocationCombo Completionmode=5
 PathCombo Completionmode=5
 Show Bookmarks=false
@@ -189,104 +144,26 @@ Show Full Path=false
 Show Inline Previews=true
 Show Preview=false
 Show Speedbar=true
-Show hidden files=true
-Sort by=Name
+Show hidden files=false
+Sort by=Date
 Sort directories first=true
-Sort reversed=false
-Speedbar Width=110
-View Style=Simple
-listViewIconSize=0
+Sort hidden files last=false
+Sort reversed=true
+Speedbar Width=197
+View Style=DetailTree
 
-[KShortcutsDialog Settings]
-Dialog Size=714,480
+[KScreen]
+ScreenScaleFactors=eDP-1=1;
+XwaylandClientsScale=false
 
-[MainToolbarIcons]
-ActiveColor=255,0,0
-ActiveColor2=0,0,0
-ActiveEffect=tomonochrome
-ActiveSemiTransparent=false
-ActiveValue=1
-Animated=false
-DefaultColor=255,0,0
-DefaultColor2=0,0,0
-DefaultEffect=tomonochrome
-DefaultSemiTransparent=false
-DefaultValue=0.8700000047683716
-DisabledColor=255,0,0
-DisabledColor2=0,0,0
-DisabledEffect=tomonochrome
-DisabledSemiTransparent=true
-DisabledValue=1
-Size=22
-
-[PanelIcons]
-ActiveColor=255,0,0
-ActiveColor2=0,0,0
-ActiveEffect=tomonochrome
-ActiveSemiTransparent=false
-ActiveValue=1
-Animated=false
-DefaultColor=255,0,0
-DefaultColor2=0,0,0
-DefaultEffect=tomonochrome
-DefaultSemiTransparent=false
-DefaultValue=0.8700000047683716
-DisabledColor=255,0,0
-DisabledColor2=0,0,0
-DisabledEffect=tomonochrome
-DisabledSemiTransparent=true
-DisabledValue=1
-Size=48
-
-[SmallIcons]
-ActiveColor=255,0,0
-ActiveColor2=0,0,0
-ActiveEffect=tomonochrome
-ActiveSemiTransparent=false
-ActiveValue=1
-Animated=false
-DefaultColor=255,0,0
-DefaultColor2=0,0,0
-DefaultEffect=tomonochrome
-DefaultSemiTransparent=false
-DefaultValue=0.8700000047683716
-DisabledColor=255,0,0
-DisabledColor2=0,0,0
-DisabledEffect=tomonochrome
-DisabledSemiTransparent=true
-DisabledValue=1
-Size=16
-
-[Toolbar style]
-ToolButtonStyle=TextBesideIcon
-ToolButtonStyleOtherToolbars=TextBesideIcon
-
-[ToolbarIcons]
-ActiveColor=255,0,0
-ActiveColor2=0,0,0
-ActiveEffect=tomonochrome
-ActiveSemiTransparent=false
-ActiveValue=1
-Animated=false
-DefaultColor=255,0,0
-DefaultColor2=0,0,0
-DefaultEffect=tomonochrome
-DefaultSemiTransparent=false
-DefaultValue=0.8700000047683716
-DisabledColor=255,0,0
-DisabledColor2=0,0,0
-DisabledEffect=tomonochrome
-DisabledSemiTransparent=true
-DisabledValue=1
-Size=22
+[Shortcuts]
+Up=
 
 [WM]
 activeBackground=0,0,0
-activeBlend=255,255,255
-activeFont=Noto Sans,18,-1,5,50,0,0,0,0,0,Regular
+activeBlend=85,0,0
+activeFont=Noto Sans,13,-1,5,50,0,0,0,0,0
 activeForeground=255,0,0
-frame=255,0,0,80
-inactiveBackground=25,0,0
-inactiveBlend=75,71,67
-inactiveForeground=255,0,0
-inactiveFrame=255,0,0,30
+inactiveBackground=0,0,0
+inactiveBlend=85,0,0
+inactiveForeground=85,0,0
