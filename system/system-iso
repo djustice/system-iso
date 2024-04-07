@@ -75,6 +75,10 @@ configure_packages() {
 
     cp -a ${work_dir}/chroot/j/org.kde.kpmcore.externalcommand.policy ${work_dir}/chroot/usr/share/polkit-1/actions
     rm -rf ${work_dir}/chroot/usr/share/wallpapers/Next
+    cp -a ${work_dir}/chroot/j/mirrorlist ${work_dir}/chroot/etc/pacman.d/mirrorlist
+    cp -a ${work_dir}/chroot/j/blackarch-mirrorlist ${work_dir}/chroot/etc/pacman.d/blackarch-mirrorlist
+    cp -a ${work_dir}/chroot/j/pacman.conf ${work_dir}/chroot/etc/pacman.conf
+    cp -a ${work_dir}/chroot/j/org.kde.kpmcore.externalcommand.policy ${work_dir}/chroot/usr/share/polkit-1/actions
     cp -a ${work_dir}/chroot/j/wallpapers/Black ${work_dir}/chroot/usr/share/wallpapers/Next
     cp -a ${work_dir}/chroot/j/icons/system-mono-icons/system-candy/system-candy-FF0000 ${work_dir}/chroot/usr/share/icons
 
