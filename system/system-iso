@@ -35,6 +35,8 @@ install_packages() {
              -M "${work_dir}/chroot" \
              $(echo $(grep -h -v ^# ${script_path}/package.list) | sed -e 's/\n/ /g')
 
+    eval arch-chroot "${work_dir}/chroot pacman -R plasma-welcome --noconfirm"
+
     local _hook
     mkdir -p ${work_dir}/chroot/etc/initcpio/{hooks,install}
     for _hook in system shutdown nbd http nfs loop; do   #disabled pxe
@@ -71,7 +73,7 @@ configure_packages() {
     #
     rm ${work_dir}/chroot/root/configure-system.sh
 
-    cp -a ${work_dir}/chroot/j/wallpapers/RedTriangles ${work_dir}/chroot/usr/share/wallpapers
+    cp -a ${work_dir}/chroot/j/org.kde.kpmcore.externalcommand.policy ${work_dir}/chroot/usr/share/polkit-1/actions
     cp -a ${work_dir}/chroot/j/wallpapers/black.png ${work_dir}/chroot/usr/share/wallpapers
     cp -a ${work_dir}/chroot/j/icons/system-mono-icons/system-candy/system-candy-FF0000 ${work_dir}/chroot/usr/share/icons
 
