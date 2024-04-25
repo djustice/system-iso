@@ -11,12 +11,10 @@ hex_to_rgb() {
 }
 
 export to_rgb=`hex_to_rgb ${color_hex}`
-
 export color_rgb=${to_rgb}
-echo $color_rgb
-
-
 export name="system-candy-${color_hex}"
+
+cp . ../system-candy.orig -a
 
 mkdir ${name}
 mkdir ${name}/apps/scalable -p
@@ -67,3 +65,4 @@ for pref in $(ls ../candy-icons/preferences/scalable)
 do
 	mv ${name}/${pref} ${name}/preferences/scalable
 done
+
