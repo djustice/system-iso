@@ -1,8 +1,8 @@
-NAME="Swift"
-PRETTY_NAME="Swift System J"
+NAME="System"
+PRETTY_NAME="System"
 ID=swift
 ID_LIKE=archlinux
 ANSI_COLOR="4;31"
-HOME_URL="https://swift-system.sf.net"
-SUPPORT_URL="https://swift-system.sf.net"
-BUG_REPORT_URL="https://swift-system.sf.net"
+HOME_URL="https://system-linux.com"
+SUPPORT_URL="https://system-linux.com"
+BUG_REPORT_URL="https://system-linux.com"

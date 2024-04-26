@@ -2,8 +2,7 @@
 
 set -e -u
 
-iso_label="SYSTEM_$(date +%Y%m)"
-work_dir="SYSTEM_$(date +%Y.%m)"
+work_dir="SYSTEM_$(date +%Y.%m.%d.%H%M)"
 arch="x86_64"
 script_path="/usr/share/system-iso"
 
@@ -144,7 +143,7 @@ setup_boot() {
 
     mkdir -p ${work_dir}/iso/root/boot/syslinux
     for _cfg in ${script_path}/syslinux/*.cfg; do
-        sed "s|%SYSTEM_LABEL%|${iso_label}|g;
+        sed "s|%SYSTEM_LABEL%|${work_dir}|g;
              s|%INSTALL_DIR%|root|g" ${_cfg} > ${work_dir}/iso/root/boot/syslinux/${_cfg##*/}
     done
     cp ${script_path}/syslinux/splash.png ${work_dir}/iso/root/boot/syslinux
@@ -172,7 +171,7 @@ setup_boot() {
     cp ${script_path}/efiboot/loader/entries/uefi-shell-v2-x86_64.conf ${work_dir}/iso/loader/entries/
     cp ${script_path}/efiboot/loader/entries/uefi-shell-v1-x86_64.conf ${work_dir}/iso/loader/entries/
 
-    sed "s|%SYSTEM_LABEL%|${iso_label}|g;
+    sed "s|%SYSTEM_LABEL%|${work_dir}|g;
          s|%INSTALL_DIR%|root|g" \
         ${script_path}/efiboot/loader/entries/system-x86_64-usb.conf > ${work_dir}/iso/loader/entries/system-x86_64.conf
 
@@ -205,7 +204,7 @@ setup_boot() {
     cp ${script_path}/efiboot/loader/entries/uefi-shell-v2-x86_64.conf ${work_dir}/efiboot/loader/entries/
     cp ${script_path}/efiboot/loader/entries/uefi-shell-v1-x86_64.conf ${work_dir}/efiboot/loader/entries/
 
-    sed "s|%J_LABEL%|${iso_label}|g;
+    sed "s|%J_LABEL%|${work_dir}|g;
          s|%INSTALL_DIR%|root|g" \
         ${script_path}/efiboot/loader/entries/system-x86_64-cd.conf > ${work_dir}/efiboot/loader/entries/system-x86_64.conf
 
@@ -217,6 +216,7 @@ setup_boot() {
     umount -d ${work_dir}/efiboot
     umount -fl ${work_dir}/chroot/proc
     umount -fl ${work_dir}/chroot/sys
+    umount -fl ${work_dir}/chroot
 
     announce "setup_boot() complete"
 }
@@ -271,10 +271,10 @@ build_iso() {
     xorriso -as mkisofs \
         -iso-level 3 \
         -full-iso9660-filenames \
-        -volid "${iso_label}" \
+        -volid "${work_dir}" \
         -appid "System Live" \
-        -publisher "Jonathan Swift" \
-        -preparer "jswift" \
+        -publisher "Drake Justice" \
+        -preparer "djustice" \
         -eltorito-boot isolinux/isolinux.bin \
         -eltorito-catalog isolinux/boot.cat \
         -no-emul-boot -boot-load-size 4 -boot-info-table \
@@ -283,7 +283,7 @@ build_iso() {
         -e EFI/root/efiboot.img \
         -no-emul-boot \
         -isohybrid-gpt-basdat \
-        -output "${work_dir}/../system-$(date +%Y.%m%d.%H%M)-${arch}.iso" \
+        -output "${work_dir}/../system-$(date +%Y.%m.%d.%H%M)-${arch}.iso" \
         "${work_dir}/iso/"
 
     announce "build_iso() complete"
