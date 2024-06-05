@@ -181,7 +181,7 @@ setup_boot() {
     curl -o ${work_dir}/iso/EFI/shellx64_v1.efi https://raw.githubusercontent.com/tianocore/edk2/master/EdkShellBinPkg/FullShell/X64/Shell_Full.efi
 
     mkdir -p ${work_dir}/iso/EFI/root
-    truncate -s 64M ${work_dir}/iso/EFI/root/efiboot.img
+    truncate -s 256M ${work_dir}/iso/EFI/root/efiboot.img
     mkfs.fat -n J_EFI ${work_dir}/iso/EFI/root/efiboot.img
 
     mkdir -p ${work_dir}/efiboot
@@ -213,7 +213,7 @@ setup_boot() {
 
     sleep 30
 
-    umount -d ${work_dir}/efiboot
+    umount -dfl ${work_dir}/efiboot
     umount -fl ${work_dir}/chroot/proc
     umount -fl ${work_dir}/chroot/sys
     umount -fl ${work_dir}/chroot
