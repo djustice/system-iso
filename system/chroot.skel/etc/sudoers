@@ -21,6 +21,7 @@
 root	ALL=(ALL) ALL
 user    ALL=(ALL) ALL
 user    ALL=NOPASSWD: /bin/cp
+user	ALL=NOPASSWD: /bin/mv
 user    ALL=NOPASSWD: /usr/bin/dbus-launch
 user    ALL=NOPASSWD: /usr/bin/calamares
 user    ALL=NOPASSWD: /usr/bin/pacman
