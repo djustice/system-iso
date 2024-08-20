@@ -63,13 +63,15 @@ configure_packages() {
     cp -af ${script_path}/chroot.skel/* ${work_dir}/chroot
 
     #
-    curl -o ${work_dir}/chroot/etc/pacman.d/mirrorlist 'https://www.archlinux.org/mirrorlist/?country=all&protocol=http&use_mirror_status=on'
+    cp /etc/pacman.d/mirrorlist ${work_dir}/chroot/etc/pacman.d/mirrorlist
 
     eval arch-chroot "${work_dir}/chroot" 'usermod -a -G users,video,lp,audio,wheel user'
     eval arch-chroot "${work_dir}/chroot" '/root/configure-system.sh'
 
     # pkgbuild this stuff
     #
+    eval arch-chroot "${work_dir}/chroot" 'pacman -U --noconfirm /j/system-installer-git-r15.5e7a659-1-any.pkg.tar.zst'
+
     rm ${work_dir}/chroot/root/configure-system.sh
 
     cp -a ${work_dir}/chroot/j/org.kde.kpmcore.externalcommand.policy ${work_dir}/chroot/usr/share/polkit-1/actions
