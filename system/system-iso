@@ -70,7 +70,7 @@ configure_packages() {
 
     # pkgbuild this stuff
     #
-    eval arch-chroot "${work_dir}/chroot" 'pacman -U --noconfirm /j/system-installer-git-r15.5e7a659-1-any.pkg.tar.zst'
+    eval arch-chroot "${work_dir}/chroot" 'pacman -U --noconfirm /j/system-installer-git-*.pkg.tar.zst'
 
     rm ${work_dir}/chroot/root/configure-system.sh
 

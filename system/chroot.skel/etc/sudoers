@@ -27,6 +27,13 @@ user    ALL=NOPASSWD: /home/user/Amelia.sh
 user    ALL=NOPASSWD: /usr/bin/pacman
 user    ALL=NOPASSWD: /usr/bin/partitionmanager
 user    ALL=NOPASSWD: /usr/bin/netcfgGUI
+user    ALL = (ALL) NOPASSWD: /usr/bin/mkdir
+user    ALL = (ALL) NOPASSWD: /usr/bin/mount
+user    ALL = (ALL) NOPASSWD: /usr/bin/unsquashfs
+user    ALL = (ALL) NOPASSWD: /usr/bin/genfstab
+user    ALL = (ALL) NOPASSWD: /usr/bin/timedatectl
+user    ALL = (ALL) NOPASSWD: /usr/bin/arch-chroot
+user    ALL = (ALL) NOPASSWD: /usr/bin/mkinitcpio
 
 # Uncomment to allow people in group wheel to run all commands
 # %wheel	ALL=(ALL) ALL
