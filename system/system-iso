@@ -70,7 +70,7 @@ configure_packages() {
 
     # pkgbuild this stuff
     #
-    eval arch-chroot "${work_dir}/chroot" 'pacman -U --noconfirm /j/system-installer-git-*.pkg.tar.zst'
+    # eval arch-chroot "${work_dir}/chroot" 'pacman -U --overwrite=* --noconfirm /j/system-installer-*.pkg.tar.zst'
 
     rm ${work_dir}/chroot/root/configure-system.sh
 
@@ -162,9 +162,10 @@ setup_boot() {
     cp ${work_dir}/chroot/usr/lib/syslinux/bios/isohdpfx.bin ${work_dir}/iso/isolinux/
     cp ${work_dir}/chroot/usr/lib/syslinux/bios/ldlinux.c32 ${work_dir}/iso/isolinux/
 
+    # FIXME: missing from chroot?
     mkdir -p ${work_dir}/iso/EFI/boot
-    cp ${work_dir}/chroot/usr/share/efitools/efi/PreLoader.efi ${work_dir}/iso/EFI/boot/bootx64.efi
-    cp ${work_dir}/chroot/usr/share/efitools/efi/HashTool.efi ${work_dir}/iso/EFI/boot/
+    cp /usr/share/efitools/efi/PreLoader.efi ${work_dir}/iso/EFI/boot/bootx64.efi
+    cp /usr/share/efitools/efi/HashTool.efi ${work_dir}/iso/EFI/boot/
 
     cp ${work_dir}/chroot/usr/lib/systemd/boot/efi/systemd-bootx64.efi ${work_dir}/iso/EFI/boot/loader.efi
 
@@ -195,9 +196,10 @@ setup_boot() {
 
     cp ${work_dir}/iso/root/boot/intel_ucode.img ${work_dir}/efiboot/EFI/root/intel_ucode.img
 
+    # FIXME: missing from chroot?
     mkdir -p ${work_dir}/efiboot/EFI/boot
-    cp ${work_dir}/chroot/usr/share/efitools/efi/PreLoader.efi ${work_dir}/efiboot/EFI/boot/bootx64.efi
-    cp ${work_dir}/chroot/usr/share/efitools/efi/HashTool.efi ${work_dir}/efiboot/EFI/boot/
+    cp /usr/share/efitools/efi/PreLoader.efi ${work_dir}/efiboot/EFI/boot/bootx64.efi
+    cp /usr/share/efitools/efi/HashTool.efi ${work_dir}/efiboot/EFI/boot/
 
     cp ${work_dir}/chroot/usr/lib/systemd/boot/efi/systemd-bootx64.efi ${work_dir}/efiboot/EFI/boot/loader.efi
 
