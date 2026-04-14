@@ -1,9 +1,9 @@
 # J
 
-pkgname=swiftiso
+pkgname=system-iso
 pkgver=1
 pkgrel=1
-pkgdesc='Tools for creating system iso images'
+pkgdesc='Tools for creating System iso images'
 arch=('any')
 license=('GPL')
 url='invalid.url'
